@@ -14,8 +14,5 @@ if __name__ == '__main__':
         for digit in range(10)
     ]
     io.showImages(io.flatten(meansAndVariances))
-    # (mean, variance) = pa2.sampleMeanAndVariance(imageByLabel[0][:100, ...])
-    # io.showImage(mean, 'Sample mean')
-    # io.showImage(variance, 'Sample variance')
 
     plt.show(block=True)
