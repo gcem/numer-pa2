@@ -32,6 +32,6 @@ if __name__ == '__main__':
         verticalalignment='center',
         transform=ax.transAxes,
         wrap=True,
-        fontsize=18)
+        fontsize=16)
 
     plt.show(block=True)
