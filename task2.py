@@ -1,17 +1,27 @@
 import dataio as io
-import pa2
+import task1
 import matplotlib.pyplot as plt
 import numpy as np
+
+
+def stackImages(images: np.ndarray):
+    """Returns images as columns of a matrix
+    """
+    # reshape in a column-major way (-1, ...). then we have to transpose
+    return images.reshape((-1, 28 * 28), order='F').transpose()
+
+
+def findDeviations(images: np.ndarray):
+    mean = task1.sampleMean(images)
+    return images - mean
+
 
 if __name__ == '__main__':
     (images, labels) = io.getTrainingData()
 
-    samples = images[:1000, ...]
-    mean = pa2.sampleMean(samples)
-    diffs = samples - mean
+    sample = images[:1000, ...]
 
-    # reshape in a column-major way (-1, ...). then we have to transpose.
-    Y = diffs.reshape((-1, 28 * 28), order='F').transpose()
+    Y = stackImages(findDeviations(sample))
 
     largestSingularValues = np.linalg.svd(np.asmatrix(Y),
                                           compute_uv=False)[:50]
