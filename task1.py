@@ -20,7 +20,10 @@ if __name__ == '__main__':
         sampleMeanAndVariance(imageByLabel[digit][:100, ...])
         for digit in range(10)
     ]
-    io.showImages(io.flatten(meansAndVariances))
+    io.showImages(io.flatten(meansAndVariances), range(0, 20, 2))
+    io.showImages(io.flatten(meansAndVariances),
+                  range(1, 20, 2),
+                  createFigure=False)
 
     ax = plt.gcf().add_subplot(4, 6, (21, 24))
     ax.set_axis_off()

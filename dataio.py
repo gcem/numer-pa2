@@ -32,8 +32,12 @@ def flatten(data: list[tuple]):
     return [elem for tup in data for elem in tup]
 
 
-def showImageIntern(image: np.ndarray, title=None):
-    plt.imshow(image, cmap='gray')
+def showImageIntern(image: np.ndarray,
+                    title: str | None = None,
+                    cmap: str = 'gray',
+                    vmin: float | None = None,
+                    vmax: float | None = None):
+    plt.imshow(image, cmap=cmap, vmin=vmin, vmax=vmax)
     ax = plt.gca()
     ax.set_xticks([])
     ax.set_yticks([])
@@ -55,14 +59,37 @@ def findGridShape(n: int):
     return (1, n)
 
 
-def showImages(images: np.array):
+def getImshowOptions(images: np.ndarray):
+    cmap = 'gray'
+    vmin = 0
+    vmax = 255
+    minmax = max(images.max(), abs(images.min()))
+    if minmax > vmax or minmax < 2:
+        vmax = minmax
+    if images.min() < 0:
+        cmap = 'seismic'
+        vmin = -1 * vmax
+    return cmap, vmin, vmax
+
+
+def showImages(images: np.ndarray | list,
+               indices: list | None = None,
+               createFigure=True):
+    images = np.array(images)
+    if not indices:
+        indices = range(len(images))
+    cmap, vmin, vmax = getImshowOptions(images[indices])
     shape = findGridShape(len(images))
-    fig, axs = plt.subplots(*shape)
-    axs = axs.flatten()
-    for i in range(len(images)):
+    axs = []
+    if createFigure:
+        _, axs = plt.subplots(*shape)
+        axs = axs.flatten()
+    else:
+        axs = plt.gcf().axes
+    for i in indices:
         ax = axs[i]
         plt.sca(ax)
-        showImageIntern(images[i])
+        showImageIntern(images[i], cmap=cmap, vmin=vmin, vmax=vmax)
     for i in range(len(images), np.prod(shape)):
         axs[i].set_visible(False)
     plt.show(block=False)
