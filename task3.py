@@ -52,4 +52,7 @@ if __name__ == '__main__':
 
     io.showImages(np.concatenate([images[:5], projections], axis=0))
 
+    plt.gcf().axes[2].set_title('5 Trainingsbilder')
+    plt.gcf().axes[2 + 5].set_title('Projektionen auf $H_5$')
+
     plt.show(block=True)
