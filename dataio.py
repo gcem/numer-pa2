@@ -45,9 +45,11 @@ def showImageIntern(image: np.ndarray,
         ax.set_title(title)
 
 
-def showImage(image: np.ndarray, title=None):
-    plt.figure()
-    showImageIntern(image, title)
+def showImage(image: np.ndarray, title=None, createFigure=True):
+    if createFigure:
+        plt.figure()
+    cmap, vmin, vmax = getImshowOptions(image)
+    showImageIntern(image, title, cmap=cmap, vmin=vmin, vmax=vmax)
     plt.show(block=False)
 
 
@@ -93,3 +95,9 @@ def showImages(images: np.ndarray | list,
     for i in range(len(images), np.prod(shape)):
         axs[i].set_visible(False)
     plt.show(block=False)
+
+
+def scatter2(data1: np.ndarray, data2: np.ndarray, label1: str | None,
+             label2: str | None):
+    plt.scatter(x=data1[:, 0], y=data1[:, 1], c='red', label=label1)
+    plt.scatter(x=data2[:, 0], y=data2[:, 1], c='blue', label=label2)
