@@ -25,8 +25,13 @@ def fitPlane(sample: np.ndarray, dimension: int):
     return U[:, :dimension], image2vector(mean)
 
 
-def projectToAffineSubspace(A: np.ndarray, b: np.ndarray, vector: np.ndarray):
-    coordinates = (vector - b).transpose() @ A
+def getSubspaceCoordinates(A: np.ndarray, b: np.ndarray, vectors: np.ndarray):
+    # workaround: b.transpose() is a noop for 1D arrays
+    return (vectors.transpose() - b.transpose()) @ A
+
+
+def projectToAffineSubspace(A: np.ndarray, b: np.ndarray, vectors: np.ndarray):
+    coordinates = getSubspaceCoordinates(A, b, vectors)
     return b + A @ coordinates.transpose()
 
 
@@ -38,8 +43,10 @@ if __name__ == '__main__':
     A, b = fitPlane(sample, 5)
 
     io.showImage(vector2image(b), 'Mittelwert der ersten 1000 Bilder')
+    plt.gcf().suptitle('Aufgabe 3')
 
     io.showImages([vector2image(column) for column in A.transpose()])
+    plt.gcf().suptitle('Aufgabe 3')
 
     # TODO: these have negative values, use another color map
     plt.gcf().axes[2].set_title('Die ersten 5 Hauptkomponente')
@@ -51,6 +58,7 @@ if __name__ == '__main__':
         projections[i] = vector2image(projection)
 
     io.showImages(np.concatenate([images[:5], projections], axis=0))
+    plt.gcf().suptitle('Aufgabe 3')
 
     plt.gcf().axes[2].set_title('5 Trainingsbilder')
     plt.gcf().axes[2 + 5].set_title('Projektionen auf $H_5$')

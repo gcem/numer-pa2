@@ -37,4 +37,5 @@ if __name__ == '__main__':
         wrap=True,
         fontsize=16)
 
+    plt.gcf().suptitle('Aufgabe 1')
     plt.show(block=True)

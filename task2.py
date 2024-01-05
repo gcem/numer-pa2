@@ -44,4 +44,5 @@ if __name__ == '__main__':
     ax.set_xlabel('Index')
     ax.set_ylabel('Eigenwert / Quadrierter Singulärwert')
 
+    plt.gcf().suptitle('Aufgabe 2')
     plt.show(block=True)
