@@ -4,13 +4,12 @@ import task3
 import matplotlib.pyplot as plt
 import numpy as np
 
-if __name__ == '__main__':
-    imageByLabel = io.getDataByLabel(*io.getTrainingData())
 
-    two = imageByLabel[1][:1000]
-    six = imageByLabel[7][:1000]
-
-    sample = np.concatenate([two, six], axis=0)
+def findAndShowH2Projections(imageByLabel: list[np.ndarray], digit1: int,
+                             digit2: int):
+    data1 = imageByLabel[digit1][:1000]
+    data2 = imageByLabel[digit2][:1000]
+    sample = np.concatenate([data1, data2], axis=0)
 
     A, b = task3.fitPlane(sample, 2)
 
@@ -36,4 +35,52 @@ if __name__ == '__main__':
                  createFigure=False)
 
     plt.subplots_adjust(hspace=.8, wspace=.5)
+
+    return subspaceCoordinates
+
+
+def kMeans(coordinates: np.ndarray, mean1: np.ndarray, mean2: np.ndarray):
+    # find the middle line
+    class1 = np.array([])
+    class2 = np.array([])
+
+    iter = 0
+    while iter < 5000:
+        direction = mean2 - mean1
+        middleDistance = (mean1.dot(direction) + mean2.dot(direction)) / 2
+        distances = coordinates.dot(direction)
+        newClass1 = distances <= middleDistance
+        newClass2 = distances > middleDistance
+        if np.array_equal(class1, newClass1):
+            return coordinates[class1, :], coordinates[class2, :], iter
+        class1 = newClass1
+        class2 = newClass2
+        mean1 = coordinates[class1].mean(axis=0)
+        mean2 = coordinates[class2].mean(axis=0)
+        iter += 1
+
+    return coordinates[class1, :], coordinates[class2, :], iter
+    # return mean1, mean2, iter
+
+
+if __name__ == '__main__':
+    imageByLabel = io.getDataByLabel(*io.getTrainingData())
+    digit1 = 1
+    digit2 = 7
+    coordinates = findAndShowH2Projections(imageByLabel, digit1, digit2)
+    class1, class2, iter = kMeans(coordinates, coordinates[:1000].mean(axis=0),
+                                  coordinates[1000:].mean(axis=0))
+
+    ax = plt.subplot(4, 8, (6, 3 * 8))  # middle of x axis
+    io.scatter2(class1, class2, str(digit1), str(digit2))
+    plt.scatter(x=[class1.mean(axis=0)[0],
+                   class2.mean(axis=0)[0]],
+                y=[class1.mean(axis=0)[1],
+                   class2.mean(axis=0)[1]],
+                c='black',
+                marker='s',
+                linewidths=5)
+    ax.legend()
+    ax.set_title(f'Klassifizierung nach {iter} K-Means-Iterationen')
+
     plt.show(block=True)

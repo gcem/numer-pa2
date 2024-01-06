@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import skimage as sk
 
 
 def getData(imageFile: str, labelFile: str):
