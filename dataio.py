@@ -9,7 +9,7 @@ def getData(imageFile: str, labelFile: str):
     labels = np.fromfile(labelFile, dtype=np.uint8)
     labels = labels[8:]
 
-    return (images, labels)
+    return (images.astype(float), labels)
 
 
 def getTrainingData():
