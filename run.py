@@ -1,20 +1,12 @@
-import dataio as io
-import pa2
 import matplotlib.pyplot as plt
-import numpy as np
+import task1
+import task2
+import task3
+import task4
 
 if __name__ == '__main__':
-    (images, labels) = io.getTrainingData()
-
-    # io.showImage(images[0, ...], 'First image')
-    covarianceMatrix = pa2.getCovarianceMatrix(images[:1000, ...])
-    # svd = np.linalg.svd(covarianceMatrix)
-    # singularValues = svd.S[0:50]
-    largestSingularValues = np.linalg.svd(np.asmatrix(covarianceMatrix),
-                                          compute_uv=False)[:50]
-
-    ax = plt.plot(largestSingularValues, label='Singular values')
-    ax = plt.plot(np.square(largestSingularValues), label='Singular values')
-    ax.set_title('50 gröingular values of Y and eigenvalues of YY^T')
-
+    task1.doTask1()
+    task2.doTask2()
+    task3.doTask3()
+    task4.doTask4()
     plt.show(block=True)

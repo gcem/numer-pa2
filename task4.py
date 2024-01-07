@@ -32,12 +32,12 @@ def showH2Projections(A: np.ndarray, subspaceCoordinates: np.ndarray,
     xlabel = 'rot: positiv\nblau: negativ'
     ax = plt.subplot(4, 8, 3 + 8 * 3)  # middle of x axis
     io.showImage(task3.vector2image(A[:, 0]),
-                 '1. Hauptkomponent',
+                 'x-Koordinate:\n1. Hauptkomponent',
                  createFigure=False)
     ax.set_xlabel(xlabel)
     ax = plt.subplot(4, 8, 1 + 8 * 1)  # middle of y axis
     io.showImage(task3.vector2image(A[:, 1]),
-                 '2. Hauptkomponent',
+                 'y-Koordinate:\n2. Hauptkomponent',
                  createFigure=False)
     ax.set_xlabel(xlabel)
 
@@ -46,33 +46,34 @@ def showH2Projections(A: np.ndarray, subspaceCoordinates: np.ndarray,
 
 def kMeans(coordinates: np.ndarray, mean1: np.ndarray, mean2: np.ndarray):
     # find the middle line
-    class1 = np.array([])
-    class2 = np.array([])
+    pointsInClass1 = np.array([])
+    pointsInClass2 = np.array([])
 
     iter = 0
     while iter < 5000:
+        iter += 1
         direction = mean2 - mean1
         middleDistance = (mean1.dot(direction) + mean2.dot(direction)) / 2
         distances = coordinates.dot(direction)
-        newClass1 = distances <= middleDistance
-        newClass2 = distances > middleDistance
-        if np.array_equal(class1, newClass1):
-            return coordinates[class1, :], coordinates[
-                class2, :], mean1, mean2, iter
-        class1 = newClass1
-        class2 = newClass2
-        mean1 = coordinates[class1].mean(axis=0)
-        mean2 = coordinates[class2].mean(axis=0)
-        iter += 1
+        newPointsInClass1 = distances <= middleDistance
+        newPointsInClass2 = distances > middleDistance
+        if np.array_equal(pointsInClass1, newPointsInClass1):
+            break
+        pointsInClass1 = newPointsInClass1
+        pointsInClass2 = newPointsInClass2
+        mean1 = coordinates[pointsInClass1].mean(axis=0)
+        mean2 = coordinates[pointsInClass2].mean(axis=0)
 
-    return coordinates[class1, :], coordinates[class2, :], mean1, mean2, iter
+    return coordinates[pointsInClass1, :], coordinates[
+        pointsInClass2, :], mean1, mean2, iter
 
 
 def showKMeansClassification(class1: np.ndarray, class2: np.ndarray,
-                             mean1: np.ndarray, mean2: np.ndarray, iter: int):
+                             mean1: np.ndarray, mean2: np.ndarray, digit1: int,
+                             digit2: int, iter: int):
     ax = plt.subplot(4, 8, (6, 3 * 8))  # middle of x axis
-    io.scatter2(class1, class2, 'Klassifiziert als ' + str(digit1),
-                'Klassifiziert als ' + str(digit2))
+    io.scatter2(class1, class2, f'Klassifiziert als {digit1}',
+                f'Klassifiziert als {digit2}')
     plt.scatter(x=[mean1[0], mean2[0]],
                 y=[mean1[1], mean2[1]],
                 c='black',
@@ -129,7 +130,9 @@ def showClassificationResults(A: np.ndarray,
     ax.set_title('Klassifizierung der Testbilder')
 
 
-if __name__ == '__main__':
+def doTask4():
+    plt.figure(figsize=[12, 9])
+
     imageByLabel = io.getDataByLabel(*io.getTrainingData())
     digit1 = 1
     digit2 = 7
@@ -139,10 +142,20 @@ if __name__ == '__main__':
     class1, class2, mean1, mean2, iter = kMeans(
         coordinates, coordinates[:1000].mean(axis=0),
         coordinates[1000:].mean(axis=0))
-    showKMeansClassification(class1, class2, mean1, mean2, iter)
+    showKMeansClassification(class1, class2, mean1, mean2, digit1, digit2,
+                             iter)
 
     testImageByLabel = io.getDataByLabel(*io.getTestData())
-    showClassificationResults(A, b, mean1, mean2, testImageByLabel, digit1,
-                              digit2)
+    showClassificationResults(A,
+                              b,
+                              mean1,
+                              mean2,
+                              testImageByLabel,
+                              digit1,
+                              digit2,
+                              testSize=100)
 
+
+if __name__ == '__main__':
+    doTask4()
     plt.show(block=True)

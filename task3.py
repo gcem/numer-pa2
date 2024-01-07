@@ -35,7 +35,7 @@ def projectToAffineSubspace(A: np.ndarray, b: np.ndarray, vectors: np.ndarray):
     return b + A @ coordinates.transpose()
 
 
-if __name__ == '__main__':
+def doTask3():
     (images, labels) = io.getTrainingData()
 
     sample = images[:1000, ...]
@@ -66,4 +66,7 @@ if __name__ == '__main__':
     plt.gcf().axes[2 + 5].set_title('Projektionen auf $H_5$')
     plt.gcf().axes[2 + 5].set_xlabel('rot: negativ')
 
+
+if __name__ == '__main__':
+    doTask3()
     plt.show(block=True)

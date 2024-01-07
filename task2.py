@@ -16,7 +16,8 @@ def findDeviations(images: np.ndarray):
     return images - mean
 
 
-if __name__ == '__main__':
+def doTask2():
+    plt.figure(figsize=[12, 6])
     (images, labels) = io.getTrainingData()
 
     sample = images[:1000, ...]
@@ -45,4 +46,8 @@ if __name__ == '__main__':
     ax.set_ylabel('Eigenwert / Quadrierter Singulärwert')
 
     plt.gcf().suptitle('Aufgabe 2')
+
+
+if __name__ == '__main__':
+    doTask2()
     plt.show(block=True)

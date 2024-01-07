@@ -13,7 +13,7 @@ def sampleMeanAndVariance(vx: np.ndarray):
     return (mean, variance)
 
 
-if __name__ == '__main__':
+def doTask1():
     imageByLabel = io.getDataByLabel(*io.getTrainingData())
 
     meansAndVariances = [
@@ -38,4 +38,8 @@ if __name__ == '__main__':
         fontsize=16)
 
     plt.gcf().suptitle('Aufgabe 1')
+
+
+if __name__ == '__main__':
+    doTask1()
     plt.show(block=True)
