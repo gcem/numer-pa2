@@ -37,7 +37,7 @@ def showH2Projections(A: np.ndarray, subspaceCoordinates: np.ndarray,
     plt.gcf().suptitle('Aufgabe 4')
 
     io.scatter2(subspaceCoordinates[:1000, :], subspaceCoordinates[1000:, :],
-                '1', '7')
+                str(digit1), str(digit2))
 
     # Anzeige konfigurieren
     ax = plt.gca()
