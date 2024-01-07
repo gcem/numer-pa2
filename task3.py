@@ -1,5 +1,4 @@
 import dataio as io
-import task1
 import task2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -87,8 +86,9 @@ def doTask3():
     plt.gcf().suptitle('Aufgabe 3')
 
     plt.gcf().axes[2].set_title('5 Testbilder')
+    plt.gcf().axes[2].set_xlabel('schwarz: positiv')
     plt.gcf().axes[2 + 5].set_title('Projektionen auf $H_5$')
-    plt.gcf().axes[2 + 5].set_xlabel('rot: negativ')
+    plt.gcf().axes[2 + 5].set_xlabel('schwarz: positiv\nrot: negativ')
 
 
 if __name__ == '__main__':
