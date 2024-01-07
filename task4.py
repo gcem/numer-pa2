@@ -23,16 +23,21 @@ def findAndShowH2Projections(imageByLabel: list[np.ndarray], digit1: int,
                 '1', '7')
     ax = plt.gca()
     ax.legend()
-    ax.set_title('Auf $H_2$ projizierte Koordinaten für die Ziffern 2 und 6')
+    ax.set_title(
+        f'Auf $H_2$ projizierte Koordinaten für die Ziffern {digit1} und {digit2}'
+    )
 
+    xlabel = 'rot: positiv\nblau: negativ'
     ax = plt.subplot(4, 8, 3 + 8 * 3)  # middle of x axis
     io.showImage(task3.vector2image(A[:, 0]),
                  '1. Hauptkomponent',
                  createFigure=False)
+    ax.set_xlabel(xlabel)
     ax = plt.subplot(4, 8, 1 + 8 * 1)  # middle of y axis
     io.showImage(task3.vector2image(A[:, 1]),
                  '2. Hauptkomponent',
                  createFigure=False)
+    ax.set_xlabel(xlabel)
 
     plt.subplots_adjust(hspace=.8, wspace=.5)
 
@@ -52,15 +57,15 @@ def kMeans(coordinates: np.ndarray, mean1: np.ndarray, mean2: np.ndarray):
         newClass1 = distances <= middleDistance
         newClass2 = distances > middleDistance
         if np.array_equal(class1, newClass1):
-            return coordinates[class1, :], coordinates[class2, :], iter
+            return coordinates[class1, :], coordinates[
+                class2, :], mean1, mean2, iter
         class1 = newClass1
         class2 = newClass2
         mean1 = coordinates[class1].mean(axis=0)
         mean2 = coordinates[class2].mean(axis=0)
         iter += 1
 
-    return coordinates[class1, :], coordinates[class2, :], iter
-    # return mean1, mean2, iter
+    return coordinates[class1, :], coordinates[class2, :], mean1, mean2, iter
 
 
 if __name__ == '__main__':
@@ -68,18 +73,20 @@ if __name__ == '__main__':
     digit1 = 1
     digit2 = 7
     coordinates = findAndShowH2Projections(imageByLabel, digit1, digit2)
-    class1, class2, iter = kMeans(coordinates, coordinates[:1000].mean(axis=0),
-                                  coordinates[1000:].mean(axis=0))
+    class1, class2, mean1, mean2, iter = kMeans(
+        coordinates, coordinates[:1000].mean(axis=0),
+        coordinates[1000:].mean(axis=0))
 
     ax = plt.subplot(4, 8, (6, 3 * 8))  # middle of x axis
-    io.scatter2(class1, class2, str(digit1), str(digit2))
-    plt.scatter(x=[class1.mean(axis=0)[0],
-                   class2.mean(axis=0)[0]],
-                y=[class1.mean(axis=0)[1],
-                   class2.mean(axis=0)[1]],
+    io.scatter2(class1, class2, 'Klassifiziert als ' + str(digit1),
+                'Klassifiziert als ' + str(digit2))
+    plt.scatter(x=[mean1[0], mean2[0]],
+                y=[mean1[1], mean2[1]],
                 c='black',
                 marker='s',
                 linewidths=5)
+    io.drawMiddleLine(mean1, mean2)
+    plt.plot([])
     ax.legend()
     ax.set_title(f'Klassifizierung nach {iter} K-Means-Iterationen')
 

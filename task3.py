@@ -50,6 +50,7 @@ if __name__ == '__main__':
 
     # TODO: these have negative values, use another color map
     plt.gcf().axes[2].set_title('Die ersten 5 Hauptkomponente')
+    plt.gcf().axes[2].set_xlabel('rot: positiv\nblau: negativ')
 
     projections = np.zeros_like(images[:5])
     for i in range(5):
@@ -57,10 +58,12 @@ if __name__ == '__main__':
         projection = projectToAffineSubspace(A, b, image2vector(image))
         projections[i] = vector2image(projection)
 
-    io.showImages(np.concatenate([images[:5], projections], axis=0))
+    io.showImages(np.concatenate([images[:5], projections], axis=0),
+                  imshowOptions=('RdGy', -255, 255))
     plt.gcf().suptitle('Aufgabe 3')
 
     plt.gcf().axes[2].set_title('5 Trainingsbilder')
     plt.gcf().axes[2 + 5].set_title('Projektionen auf $H_5$')
+    plt.gcf().axes[2 + 5].set_xlabel('rot: negativ')
 
     plt.show(block=True)

@@ -75,11 +75,13 @@ def getImshowOptions(images: np.ndarray):
 
 def showImages(images: np.ndarray | list,
                indices: list | None = None,
-               createFigure=True):
+               createFigure=True,
+               imshowOptions: tuple | None = None):
     images = np.array(images)
     if not indices:
         indices = range(len(images))
-    cmap, vmin, vmax = getImshowOptions(images[indices])
+    cmap, vmin, vmax = imshowOptions if imshowOptions else getImshowOptions(
+        images[indices])
     shape = findGridShape(len(images))
     axs = []
     if createFigure:
@@ -98,5 +100,31 @@ def showImages(images: np.ndarray | list,
 
 def scatter2(data1: np.ndarray, data2: np.ndarray, label1: str | None,
              label2: str | None):
-    plt.scatter(x=data1[:, 0], y=data1[:, 1], c='red', label=label1)
-    plt.scatter(x=data2[:, 0], y=data2[:, 1], c='blue', label=label2)
+    color1, color2 = 'red', 'blue'
+    if data1[:, 0].mean() < data2[:, 0].mean():
+        color1, color2 = color2, color1
+    plt.scatter(x=data1[:, 0], y=data1[:, 1], c=color1, label=label1)
+    plt.scatter(x=data2[:, 0], y=data2[:, 1], c=color2, label=label2)
+
+
+def drawMiddleLine(point1: np.ndarray, point2: np.ndarray):
+    left, right = plt.xlim()
+    bottom, top = plt.ylim()
+    midPoint = (point1 + point2) / 2
+    direction = point1 - point2
+    direction = np.array([-direction[1], direction[0]])  # rotate
+    if direction[1] == 0:
+        plt.plot([left, right], [midPoint[1], midPoint[1]])
+    direction /= direction[1]  # set height to 1
+    t1 = (left - midPoint[0]) / direction[0]
+    t2 = (right - midPoint[0]) / direction[0]
+    if t2 > t1:
+        t1, t2 = t2, t1
+    t1 = min(t1, top - midPoint[1])
+    t2 = max(t2, bottom - midPoint[1])
+
+    start = midPoint + t1 * direction
+    end = midPoint + t2 * direction
+    plt.plot([start[0], end[0]], [start[1], end[1]], c="black")
+    plt.xlim(left, right)
+    plt.ylim(bottom, top)
