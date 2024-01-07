@@ -1,6 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+#############################################################################
+# Diese Datei enthält die Hilfsfunktionen für das Lesen und die Anzeige von #
+# Daten.                                                                    #
+#############################################################################
+
 
 def getData(imageFile: str, labelFile: str):
     images = np.fromfile(imageFile, dtype=np.uint8)
