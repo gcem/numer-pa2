@@ -5,15 +5,15 @@ import numpy as np
 
 
 def stackImages(images: np.ndarray):
-    """Returns images as columns of a matrix
+    """Gibt die Bilder in `images` als Spalten einer Matrix zurück.
     """
-    # reshape in a column-major way (-1, ...). then we have to transpose
     return images.reshape((-1, 28 * 28), order='F').transpose()
 
 
 def findDeviations(images: np.ndarray):
-    mean = task1.sampleMean(images)
-    return images - mean
+    """Berechnet (Bild - Mittelwert) für jedes Bild in `images`.
+    """
+    return images - images.mean(axis=0)
 
 
 def doTask2():
@@ -22,6 +22,7 @@ def doTask2():
 
     sample = images[:1000, ...]
 
+    # Singulärwerte von Y finden
     Y = stackImages(findDeviations(sample))
 
     largestSingularValues = np.linalg.svd(np.asmatrix(Y),
@@ -29,13 +30,16 @@ def doTask2():
 
     S = Y @ Y.transpose()
 
-    # since S is symmetric, use eigh
+    # Eigenwerte von S finden. Weil S symmetrisch ist, nutzen wir eigvalsh statt
+    # eigvals
     largestEigenvalues = np.linalg.eigvalsh(S)[:-51:-1]
 
+    # Eigenwerte und quadrierte Singulärwerte auf einem Graphen anzeigen
     plt.plot(np.square(largestSingularValues),
              label='50 größte quadrierte Singulärwerte von $Y$')
     plt.plot(largestEigenvalues, label='50 größte Eigenwerte von $YY^T$')
 
+    # Anzeige konfigurieren
     ax = plt.gca()
     ax.legend()
     ax.set_title('Eigenwerte und quadrierte Singulärwerte')

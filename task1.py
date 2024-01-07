@@ -3,14 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def sampleMean(vx: np.ndarray):
-    return 1 / vx.shape[0] * vx.sum(axis=0)
-
-
-def sampleMeanAndVariance(vx: np.ndarray):
-    mean = sampleMean(vx)
-    variance = 1 / vx.shape[0] * np.square(vx - mean).sum(axis=0)
-    return (mean, variance)
+def sampleMeanAndVariance(images: np.ndarray):
+    """Findet den empirischen Mittelwert und die empirische Varianz.
+    """
+    mean = images.mean(axis=0)
+    variance = np.square(images - mean).mean(axis=0)
+    return mean, variance
 
 
 def doTask1():
@@ -20,11 +18,14 @@ def doTask1():
         sampleMeanAndVariance(imageByLabel[digit][:100, ...])
         for digit in range(10)
     ]
+
+    # Mittelwert und Varianz anzeigen
     io.showImages(io.flatten(meansAndVariances), range(0, 20, 2))
     io.showImages(io.flatten(meansAndVariances),
                   range(1, 20, 2),
                   createFigure=False)
 
+    # die Anzeige konfigurieren (Titel)
     ax = plt.gcf().add_subplot(4, 6, (21, 24))
     ax.set_axis_off()
     plt.text(
