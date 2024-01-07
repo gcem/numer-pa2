@@ -5,17 +5,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def findAndShowH2Projections(imageByLabel: list[np.ndarray], digit1: int,
-                             digit2: int):
+def findH2Projections(imageByLabel: list[np.ndarray], digit1: int,
+                      digit2: int):
     data1 = imageByLabel[digit1][:1000]
     data2 = imageByLabel[digit2][:1000]
     sample = np.concatenate([data1, data2], axis=0)
 
     A, b = task3.fitPlane(sample, 2)
 
-    subspaceCoordinates = task3.getSubspaceCoordinates(
-        A, b, task2.stackImages(sample))
+    return A, b, task3.getSubspaceCoordinates(A, b, task2.stackImages(sample))
 
+
+def showH2Projections(A: np.ndarray, subspaceCoordinates: np.ndarray,
+                      digit1: int, digit2: int):
     ax = plt.subplot(4, 8, (2, 4 + 8 * 2))
     plt.gcf().suptitle('Aufgabe 4')
 
@@ -24,7 +26,7 @@ def findAndShowH2Projections(imageByLabel: list[np.ndarray], digit1: int,
     ax = plt.gca()
     ax.legend()
     ax.set_title(
-        f'Auf $H_2$ projizierte Koordinaten für die Ziffern {digit1} und {digit2}'
+        f'Auf $H_2$ projizierte Koordinaten\nfür die Ziffern {digit1} und {digit2}'
     )
 
     xlabel = 'rot: positiv\nblau: negativ'
@@ -40,8 +42,6 @@ def findAndShowH2Projections(imageByLabel: list[np.ndarray], digit1: int,
     ax.set_xlabel(xlabel)
 
     plt.subplots_adjust(hspace=.8, wspace=.5)
-
-    return subspaceCoordinates
 
 
 def kMeans(coordinates: np.ndarray, mean1: np.ndarray, mean2: np.ndarray):
@@ -68,15 +68,8 @@ def kMeans(coordinates: np.ndarray, mean1: np.ndarray, mean2: np.ndarray):
     return coordinates[class1, :], coordinates[class2, :], mean1, mean2, iter
 
 
-if __name__ == '__main__':
-    imageByLabel = io.getDataByLabel(*io.getTrainingData())
-    digit1 = 1
-    digit2 = 7
-    coordinates = findAndShowH2Projections(imageByLabel, digit1, digit2)
-    class1, class2, mean1, mean2, iter = kMeans(
-        coordinates, coordinates[:1000].mean(axis=0),
-        coordinates[1000:].mean(axis=0))
-
+def showKMeansClassification(class1: np.ndarray, class2: np.ndarray,
+                             mean1: np.ndarray, mean2: np.ndarray, iter: int):
     ax = plt.subplot(4, 8, (6, 3 * 8))  # middle of x axis
     io.scatter2(class1, class2, 'Klassifiziert als ' + str(digit1),
                 'Klassifiziert als ' + str(digit2))
@@ -88,6 +81,68 @@ if __name__ == '__main__':
     io.drawMiddleLine(mean1, mean2)
     plt.plot([])
     ax.legend()
-    ax.set_title(f'Klassifizierung nach {iter} K-Means-Iterationen')
+    ax.set_title(
+        f'Klassifizierung der Trainingsbilder\nnach {iter} K-Means-Iterationen'
+    )
+
+
+def showClassificationResults(A: np.ndarray,
+                              b: np.ndarray,
+                              mean1: np.ndarray,
+                              mean2: np.ndarray,
+                              testImageByLabel: list[np.ndarray],
+                              digit1: int,
+                              digit2: int,
+                              testSize: int = 100):
+    digit1Images = testImageByLabel[digit1][:testSize]
+    digit2Images = testImageByLabel[digit2][:testSize]
+
+    digit1Coordinates = task3.getSubspaceCoordinates(
+        A, b, task2.stackImages(digit1Images))
+    digit2Coordinates = task3.getSubspaceCoordinates(
+        A, b, task2.stackImages(digit2Images))
+
+    direction = mean2 - mean1
+    middleDistance = (mean1.dot(direction) + mean2.dot(direction)) / 2
+    digit1Correct = digit1Coordinates.dot(direction) <= middleDistance
+    digit2Correct = digit2Coordinates.dot(direction) > middleDistance
+
+    rowLabels = [f'Ziffer {d}' for d in (digit1, digit2)]
+    colLabels = [
+        'Anzahl\nTestbilder', 'Richtig\nklassifiziert', 'Falsch\nklassifiziert'
+    ]
+    colors = ['lightgray', 'green', 'red']
+
+    ax = plt.subplot(4, 8, (6 + 3 * 8, 4 * 8))
+    ax.axis('off')
+
+    table = plt.table(
+        [[testSize,
+          digit1Correct.sum(), testSize - digit1Correct.sum()],
+         [testSize,
+          digit2Correct.sum(), testSize - digit2Correct.sum()]],
+        rowLabels=rowLabels,
+        colLabels=colLabels,
+        colColours=colors,
+        bbox=[0, 0, 1, 1])
+    table.auto_set_font_size(False)
+    ax.set_title('Klassifizierung der Testbilder')
+
+
+if __name__ == '__main__':
+    imageByLabel = io.getDataByLabel(*io.getTrainingData())
+    digit1 = 1
+    digit2 = 7
+    A, b, coordinates = findH2Projections(imageByLabel, digit1, digit2)
+    showH2Projections(A, coordinates, digit1, digit2)
+
+    class1, class2, mean1, mean2, iter = kMeans(
+        coordinates, coordinates[:1000].mean(axis=0),
+        coordinates[1000:].mean(axis=0))
+    showKMeansClassification(class1, class2, mean1, mean2, iter)
+
+    testImageByLabel = io.getDataByLabel(*io.getTestData())
+    showClassificationResults(A, b, mean1, mean2, testImageByLabel, digit1,
+                              digit2)
 
     plt.show(block=True)
