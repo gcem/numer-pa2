@@ -120,6 +120,7 @@ def drawMiddleLine(point1: np.ndarray, point2: np.ndarray):
     direction = np.array([-direction[1], direction[0]])  # rotate
     if direction[1] == 0:
         plt.plot([left, right], [midPoint[1], midPoint[1]])
+        return
     direction /= direction[1]  # set height to 1
     t1 = (left - midPoint[0]) / direction[0]
     t2 = (right - midPoint[0]) / direction[0]
